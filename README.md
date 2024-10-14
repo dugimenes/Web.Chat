@@ -1,4 +1,4 @@
-# **[Título do Projeto] - Aplicação de Blog Simples com MVC e API RESTful**
+# **Web Chat - Aplicação de Blog Simples com MVC e API RESTful**
 
 ## **1. Apresentação**
 
@@ -6,9 +6,8 @@ Bem-vindo ao repositório do projeto **[Título do Projeto]**. Este projeto é u
 O objetivo principal desenvolver uma aplicação de blog que permite aos usuários criar, editar, visualizar e excluir posts e comentários, tanto através de uma interface web utilizando MVC quanto através de uma API RESTful.
 Descreva livremente mais detalhes do seu projeto aqui.
 
-### **Autor(es)**
-- **Nome 1**
-- **Nome 2**
+### **Autor**
+- **Eduardo Gimenes**
 
 ## **2. Proposta do Projeto**
 
@@ -77,7 +76,7 @@ A estrutura do projeto é organizada da seguinte forma:
 3. **Executar a Aplicação MVC:**
    - `cd src/Blog.Mvc/`
    - `dotnet run`
-   - Acesse a aplicação em: http://localhost:5000
+   - Acesse a aplicação em: https://localhost:5000
 
 4. **Executar a API:**
    - `cd src/Blog.Api/`
@@ -93,7 +92,7 @@ A estrutura do projeto é organizada da seguinte forma:
 
 A documentação da API está disponível através do Swagger. Após iniciar a API, acesse a documentação em:
 
-http://localhost:5001/swagger
+https://localhost:5001/swagger
 
 ## **9. Avaliação**
 
