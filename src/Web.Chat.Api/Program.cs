@@ -34,7 +34,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Web Chat V1");
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Web Blog V1");
         c.RoutePrefix = string.Empty;
     });
 

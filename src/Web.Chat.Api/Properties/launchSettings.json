@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "WebChatApi": {
+    "WebBlogApi": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
