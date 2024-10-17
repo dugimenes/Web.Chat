@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web.Blog.Web", "src\Web.Chat.Web\Web.Blog.Web.csproj", "{011771D1-ED42-4117-8EB7-E2EC703D4544}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web.Blog.Web", "src\Web.Blog.Web\Web.Blog.Web.csproj", "{011771D1-ED42-4117-8EB7-E2EC703D4544}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web.Blog.Data", "src\Web.Chat.Data\Web.Blog.Data.csproj", "{78B41DCB-7EDD-4E77-B903-4A78D125A142}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web.Blog.Api", "src\Web.Blog.Api\Web.Blog.Api.csproj", "{4DADE178-9854-4F1D-BEDC-38D2E6CC3E6D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web.Blog.Api", "src\Web.Chat.Api\Web.Blog.Api.csproj", "{4DADE178-9854-4F1D-BEDC-38D2E6CC3E6D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web.Blog.Data", "src\Web.Blog.Data\Web.Blog.Data.csproj", "{18AB6E07-DC9C-4598-A4ED-DC852311FE43}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,14 +19,14 @@ Global
 		{011771D1-ED42-4117-8EB7-E2EC703D4544}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{011771D1-ED42-4117-8EB7-E2EC703D4544}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{011771D1-ED42-4117-8EB7-E2EC703D4544}.Release|Any CPU.Build.0 = Release|Any CPU
-		{78B41DCB-7EDD-4E77-B903-4A78D125A142}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{78B41DCB-7EDD-4E77-B903-4A78D125A142}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{78B41DCB-7EDD-4E77-B903-4A78D125A142}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{78B41DCB-7EDD-4E77-B903-4A78D125A142}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4DADE178-9854-4F1D-BEDC-38D2E6CC3E6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4DADE178-9854-4F1D-BEDC-38D2E6CC3E6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4DADE178-9854-4F1D-BEDC-38D2E6CC3E6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4DADE178-9854-4F1D-BEDC-38D2E6CC3E6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18AB6E07-DC9C-4598-A4ED-DC852311FE43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18AB6E07-DC9C-4598-A4ED-DC852311FE43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18AB6E07-DC9C-4598-A4ED-DC852311FE43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18AB6E07-DC9C-4598-A4ED-DC852311FE43}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
