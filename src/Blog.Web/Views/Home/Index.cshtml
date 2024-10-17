@@ -1,0 +1,9 @@
+﻿@model List<Blog.Data.Models.Post>
+
+<h1>Posts</h1>
+<ul>
+    @foreach (var post in Model)
+    {
+        <li>@post.Titulo - @post.Descricao</li>
+    }
+</ul>
