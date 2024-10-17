@@ -1,8 +1,8 @@
-# **Web Chat - Aplicação de Blog Simples com MVC e API RESTful**
+# **Web Blog - Aplicação de Blog Simples com MVC e API RESTful**
 
 ## **1. Apresentação**
 
-Bem-vindo ao repositório do projeto **[Título do Projeto]**. Este projeto é uma entrega do MBA DevXpert Full Stack .NET e é referente ao módulo **Introdução ao Desenvolvimento ASP.NET Core**.
+Bem-vindo ao repositório do projeto **[Web Blog]**. Este projeto é uma entrega do MBA DevXpert Full Stack .NET e é referente ao módulo **Introdução ao Desenvolvimento ASP.NET Core**.
 O objetivo principal desenvolver uma aplicação de blog que permite aos usuários criar, editar, visualizar e excluir posts e comentários, tanto através de uma interface web utilizando MVC quanto através de uma API RESTful.
 Descreva livremente mais detalhes do seu projeto aqui.
 
@@ -66,15 +66,15 @@ A estrutura do projeto é organizada da seguinte forma:
 ### **Passos para Execução**
 
 1. **Clone o Repositório:**
-   - `git clone https://github.com/seu-usuario/nome-do-repositorio.git`
-   - `cd nome-do-repositorio`
+   - `git clone https://github.com/dugimenes/Web.Chat.git`
+   - `cd Web.Chat`
 
 2. **Configuração do Banco de Dados:**
    - No arquivo `appsettings.json`, configure a string de conexão do SQL Server.
    - Rode o projeto para que a configuração do Seed crie o banco e popule com os dados básicos
 
 3. **Executar a Aplicação MVC:**
-   - `cd src/Blog.Mvc/`
+   - `cd src/Blog.Web/`
    - `dotnet run`
    - Acesse a aplicação em: https://localhost:5000
 
