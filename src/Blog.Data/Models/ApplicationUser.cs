@@ -2,7 +2,7 @@
 
 namespace Blog.Data.Models
 {
-    public class ApplicationUser : IdentityUser
+    public class ApplicationUser : IdentityUser<int>
     {
     }
 }
