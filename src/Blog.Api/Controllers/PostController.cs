@@ -14,12 +14,12 @@ namespace Blog.Api.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetPosts() => Ok(_context.Post.ToList());
+        public IActionResult GetPosts() => Ok(_context.Posts.ToList());
 
         [HttpPost]
         public IActionResult CreatePost(Post post)
         {
-            _context.Post.Add(post);
+            _context.Posts.Add(post);
             _context.SaveChanges();
             return CreatedAtAction(nameof(GetPosts), new { id = post.Id }, post);
         }

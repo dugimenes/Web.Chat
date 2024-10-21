@@ -30,7 +30,7 @@ namespace Web.Blog.Data.EntityConfiguration
                    .IsRequired()
                    .HasDefaultValue(0);
 
-            builder.HasOne(a => a.Usuario)
+            builder.HasOne(a => a.Autor)
                    .WithMany()
                    .HasForeignKey(a => a.UsuarioId)
                    .IsRequired();

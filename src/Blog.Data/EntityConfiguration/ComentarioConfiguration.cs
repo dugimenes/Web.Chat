@@ -18,7 +18,7 @@ namespace Web.Blog.Data.EntityConfiguration
             builder.Property(x => x.DataCadastro)
                    .IsRequired();
 
-            builder.HasOne(x => x.Usuario)
+            builder.HasOne(x => x.Autor)
                    .WithMany()
                    .HasForeignKey(x => x.UsuarioId)
                    .IsRequired();

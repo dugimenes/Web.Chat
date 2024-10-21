@@ -1,9 +1,9 @@
-﻿@model List<Blog.Data.Models.Post>
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
 
-<h1>Posts</h1>
-<ul>
-    @foreach (var post in Model)
-    {
-        <li>@post.Titulo - @post.Descricao</li>
-    }
-</ul>
+<div class="text-center">
+    @* <h1 class="display-4">Welcome</h1> *@
+    <h1 class="display-4"><i class="fa-solid fa-code"></i> Welcome</h1>
+    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
