@@ -8,11 +8,11 @@ namespace Blog.Data.Models
 
         [Required(ErrorMessage = "O campo {0} é obrigatório")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "O campo {0} tem que ter entre {1} e {2} caracteres")]
-        public string Nome { get; set; }
+        public string? Nome { get; set; }
 
         [Required(ErrorMessage = "O campo {0} é obrigatório")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "O campo {0} tem que ter entre {1} e {2} caracteres")]
-        public string SobreNome { get; set; }
+        public string? SobreNome { get; set; }
 
         [Required(ErrorMessage = "O campo {0} é obrigatório")]
         [DataType(DataType.DateTime, ErrorMessage = "O campo {0} está em formato incorreto")]
