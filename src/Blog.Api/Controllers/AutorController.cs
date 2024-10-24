@@ -1,21 +1,19 @@
 ﻿using Blog.Data.Models;
 using Blog.Web.Data;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Blog.Api.Controllers
 {
-    [Authorize]
     [ApiController]
-    [Route("api/comentario")]
-    public class ComentarioController : ControllerBase
+    [Route("api/autor")]
+    public class AutorController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
 
-        public ComentarioController(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
+        public AutorController(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
         {
             _userManager = userManager;
             _context = context;
@@ -25,40 +23,20 @@ namespace Blog.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<IEnumerable<Comentario>>> Obter()
+        public async Task<ActionResult<IEnumerable<Autor>>> Obter()
         {
-            return await _context.Comentarios.ToListAsync();
+            return await _context.Autores.ToListAsync();
         }
 
         [HttpGet("{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<Post>> Obter(int id)
+        public async Task<ActionResult<Autor>> Obter(int id)
         {
-            var comentario = await _context.Posts.FindAsync(id);
+            var autor = await _context.Autores.FindAsync(id);
 
-            return comentario;
-        }
-
-        [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesDefaultResponseType]
-        public async Task<ActionResult<Comentario>> Cadastrar(Comentario comentario)
-        {
-            if (!ModelState.IsValid)
-            {
-                return ValidationProblem(new ValidationProblemDetails(ModelState)
-                {
-                    Title = "Erros de validação"
-                });
-            }
-
-            _context.Comentarios.Add(comentario);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(Obter), new { id = comentario.Id }, comentario);
+            return autor;
         }
 
         [HttpPut("{id:int}")]
@@ -66,13 +44,13 @@ namespace Blog.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult> Atualizar(int id, Comentario comentario)
+        public async Task<ActionResult> Atualizar(int id, Autor autor)
         {
-            if (id != comentario.Id) return BadRequest();
+            if (id != autor.Id) return BadRequest();
 
             if (!ModelState.IsValid) return ValidationProblem(ModelState);
 
-            _context.Comentarios.Update(comentario);
+            _context.Autores.Update(autor);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -84,9 +62,9 @@ namespace Blog.Api.Controllers
         [ProducesDefaultResponseType]
         public async Task<ActionResult> Remover(int id)
         {
-            var comentario = await _context.Comentarios.FindAsync(id);
+            var autor = await _context.Posts.FindAsync(id);
 
-            _context.Comentarios.Remove(comentario);
+            _context.Posts.Remove(autor);
             await _context.SaveChangesAsync();
 
             return NoContent();

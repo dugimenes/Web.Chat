@@ -1,40 +1,39 @@
 ﻿using Blog.Data.Models;
 using Blog.Web.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 namespace Blog.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/postagem")]
-    public class PostsController : ControllerBase
+    public class PostagemController : ControllerBase
     {
-        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
-        readonly JwtSettings _jwtSettings;
-        
 
-        public PostsController(SignInManager<ApplicationUser> signInManager, 
-                                UserManager<ApplicationUser> userManager,
-                                IOptions<JwtSettings> jwtSettings, 
-                                ApplicationDbContext context)
+        public PostagemController(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
         {
-            _signInManager = signInManager;
             _userManager = userManager;
             _context = context;
-            _jwtSettings = jwtSettings.Value;
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
         public async Task<ActionResult<IEnumerable<Post>>> Obter()
         {
             return await _context.Posts.ToListAsync();
         }
 
         [HttpGet("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
         public async Task<ActionResult<Post>> Obter(int id)
         {
             var post = await _context.Posts.FindAsync(id);
@@ -43,7 +42,10 @@ namespace Blog.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Post>> CadastrarPostagem(Post postagem)
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<Post>> Cadastrar(Post postagem)
         {
             if (!ModelState.IsValid)
             {
@@ -60,7 +62,11 @@ namespace Blog.Api.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public async Task<ActionResult> AtualizarPostagem(int id, Post postagem)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult> Atualizar(int id, Post postagem)
         {
             if (id != postagem.Id) return BadRequest();
 
@@ -73,7 +79,10 @@ namespace Blog.Api.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        public async Task<ActionResult> DeletePostagem(int id)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult> Remover(int id)
         {
             var postagem = await _context.Posts.FindAsync(id);
 

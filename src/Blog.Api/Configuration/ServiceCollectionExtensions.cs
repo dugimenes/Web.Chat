@@ -64,8 +64,6 @@ namespace Blog.Api.Extensions
             var jwtSettings = jwtSettingsSection.Get<JwtSettings>();
             var key = Encoding.ASCII.GetBytes(jwtSettings.Segredo);
 
-            //var key = configuration["Jwt:Key"];
-            
             if (string.IsNullOrEmpty(jwtSettings.Segredo))
             {
                 throw new ArgumentNullException(nameof(jwtSettings.Segredo), "JWT Key is not defined in the configuration.");
