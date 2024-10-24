@@ -52,7 +52,7 @@ namespace Blog.Web.Controllers
 
         [HttpPost("novo")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nome,SobreNome,DataCadastro,Admin")] Autor autor)
+        public async Task<IActionResult> Create([Bind("Id,Nome,SobreNome,DataCadastro")] Autor autor)
         {
             if (ModelState.IsValid)
             {
@@ -82,7 +82,7 @@ namespace Blog.Web.Controllers
 
         [HttpPost("editar/{id:int}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,SobreNome,DataCadastro,Admin")] Autor autor)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,SobreNome,DataCadastro")] Autor autor)
         {
             if (id != autor.Id)
             {

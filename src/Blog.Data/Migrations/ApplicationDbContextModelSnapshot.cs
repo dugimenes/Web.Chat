@@ -93,15 +93,7 @@ namespace Blog.Data.Migrations
             modelBuilder.Entity("Blog.Data.Models.Autor", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Admin")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
 
                     b.Property<DateTime>("DataCadastro")
                         .HasColumnType("datetime2");
@@ -329,6 +321,17 @@ namespace Blog.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Blog.Data.Models.Autor", b =>
+                {
+                    b.HasOne("Blog.Data.Models.ApplicationUser", "User")
+                        .WithOne()
+                        .HasForeignKey("Blog.Data.Models.Autor", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Blog.Data.Models.Comentario", b =>
                 {
                     b.HasOne("Blog.Data.Models.Post", "Post")
@@ -337,26 +340,26 @@ namespace Blog.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Blog.Data.Models.Autor", "Usuario")
+                    b.HasOne("Blog.Data.Models.Autor", "Autor")
                         .WithMany()
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Post");
+                    b.Navigation("Autor");
 
-                    b.Navigation("Usuario");
+                    b.Navigation("Post");
                 });
 
             modelBuilder.Entity("Blog.Data.Models.Post", b =>
                 {
-                    b.HasOne("Blog.Data.Models.Autor", "Usuario")
+                    b.HasOne("Blog.Data.Models.Autor", "Autor")
                         .WithMany()
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Usuario");
+                    b.Navigation("Autor");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

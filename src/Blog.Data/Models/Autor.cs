@@ -1,9 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Blog.Data.Models
 {
     public class Autor
     {
+        [Key, ForeignKey("User")]
         public int Id { get; set; }
 
         [Required(ErrorMessage = "O campo {0} é obrigatório")]
@@ -18,7 +21,8 @@ namespace Blog.Data.Models
         [DataType(DataType.DateTime, ErrorMessage = "O campo {0} está em formato incorreto")]
         [Display(Name = "Data de Cadastro")]
         public DateTime DataCadastro { get; set; }
+        
+        public ApplicationUser User { get; set; }
 
-        public bool Admin { get; set; }
     }
 }

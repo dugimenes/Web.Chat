@@ -8,7 +8,10 @@ namespace Web.Blog.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Autor> builder)
         {
-            builder.ToTable("Autores");
+            builder.ToTable("Autores")
+                .HasOne(a => a.User)
+                .WithOne()
+                .HasForeignKey<Autor>(a => a.Id);
 
             builder.Property(a => a.Nome)
                 .IsRequired()
@@ -19,10 +22,6 @@ namespace Web.Blog.Data.Configurations
 
             builder.Property(a => a.DataCadastro)
                 .IsRequired();
-
-            builder.Property(a => a.Admin)
-                .IsRequired()
-                .HasDefaultValue(false);
         }
     }
 }

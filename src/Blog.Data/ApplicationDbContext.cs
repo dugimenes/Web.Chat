@@ -15,8 +15,7 @@ namespace Blog.Web.Data
         public DbSet<Autor> Autores { get; set; }
         public DbSet<Comentario> Comentarios { get; set; }
         public DbSet<Post> Posts { get; set; }
-        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
-
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
