@@ -1,4 +1,5 @@
 ﻿using Blog.Data.Models;
+using Blog.Services.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -15,14 +16,16 @@ namespace Blog.Api.Controllers
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
-        readonly JwtSettings _jwtSettings;
+        private readonly JwtSettings _jwtSettings;
+        private readonly IAutorService _autorService;
 
         public AuthController(SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
-            IOptions<JwtSettings> jwtSettings)
+            IOptions<JwtSettings> jwtSettings, IAutorService autorService)
         {
             _signInManager = signInManager;
             _userManager = userManager;
+            _autorService = autorService;
             _jwtSettings = jwtSettings.Value;
         }
 
@@ -43,6 +46,7 @@ namespace Blog.Api.Controllers
 
             if (result.Succeeded)
             {
+                await _autorService.CreateAutorAsync(user);
                 await _signInManager.SignInAsync(user, false);
                 return Ok(await GerarJwt(registerUser.Email));
             }

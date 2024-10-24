@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Blog.Services.Services;
 using Microsoft.OpenApi.Models;
 
 namespace Blog.Api.Extensions
@@ -68,6 +69,8 @@ namespace Blog.Api.Extensions
             {
                 throw new ArgumentNullException(nameof(jwtSettings.Segredo), "JWT Key is not defined in the configuration.");
             }
+
+            services.AddScoped<IAutorService, AutorService>();
 
             services.AddAuthentication(options =>
             {
