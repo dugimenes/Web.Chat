@@ -17,11 +17,11 @@ namespace Blog.Data.Models
         
         public int PostId { get; set; }
         
-        public virtual Post Post { get; set; }
+        public virtual Post? Post { get; set; }
         
         public int? UsuarioId { get; set; }
         
-        public virtual Autor Autor { get; set; }
+        public virtual Autor? Autor { get; set; }
         
         public bool Ativo { get; set; }
     }

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Blog.Web.Controllers
 {
     [Authorize]
-    [Route("posts")]
+    //[Route("posts")]
     public class PostsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -121,6 +121,7 @@ namespace Blog.Web.Controllers
             return View(post);
         }
 
+        [Authorize(Roles = "Admin")]
         [Route("excluir/{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {

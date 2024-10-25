@@ -60,6 +60,9 @@ namespace Blog.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Descricao,DataCadastro,PostId,UsuarioId,Ativo")] Comentario comentario)
         {
+            ModelState.Remove("Id");
+            ModelState.Remove("AutorId");
+
             if (ModelState.IsValid)
             {
                 _context.Add(comentario);
