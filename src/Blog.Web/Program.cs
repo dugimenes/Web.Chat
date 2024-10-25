@@ -1,5 +1,4 @@
 using Blog.Data.Models;
-using Blog.Services.Services;
 using Blog.Web.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -14,8 +13,6 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<ApplicationUser>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
-
-builder.Services.AddScoped<IAutorService, AutorService>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();

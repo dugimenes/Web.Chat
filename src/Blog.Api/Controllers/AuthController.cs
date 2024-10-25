@@ -1,5 +1,5 @@
 ﻿using Blog.Data.Models;
-using Blog.Services.Services;
+using Blog.Data.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -46,7 +46,7 @@ namespace Blog.Api.Controllers
 
             if (result.Succeeded)
             {
-                await _autorService.CreateAutorAsync(user);
+                await _autorService.CreateAutorAsync(user, registerUser);
                 await _signInManager.SignInAsync(user, false);
                 return Ok(await GerarJwt(registerUser.Email));
             }

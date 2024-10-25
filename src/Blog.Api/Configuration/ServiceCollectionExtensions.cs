@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Blog.Services.Services;
 using Microsoft.OpenApi.Models;
+using System.Text;
+using Blog.Data.Services;
 
 namespace Blog.Api.Extensions
 {

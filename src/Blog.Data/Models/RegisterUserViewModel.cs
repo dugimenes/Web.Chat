@@ -14,5 +14,10 @@ namespace Blog.Data.Models
 
         [Compare("Password", ErrorMessage = "As senhas não conferem.")]
         public string ConfirmPassword { get; set; }
+
+        [Required]
+        public string Nome { get; set; }
+
+        public string Sobrenome { get; set; }
     }
 }
