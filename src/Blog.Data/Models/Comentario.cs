@@ -19,7 +19,7 @@ namespace Blog.Data.Models
         
         public virtual Post Post { get; set; }
         
-        public int UsuarioId { get; set; }
+        public int? UsuarioId { get; set; }
         
         public virtual Autor Autor { get; set; }
         

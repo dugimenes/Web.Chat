@@ -23,7 +23,16 @@ namespace Blog.Api.Extensions
                 });
 
             services.AddEndpointsApiExplorer();
-            
+
+            // Configura a sessão
+            services.AddDistributedMemoryCache();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(60);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
             services.AddSwaggerGen(c =>
             {
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -53,7 +62,9 @@ namespace Blog.Api.Extensions
             });
 
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString));
+                options.UseSqlServer(connectionString)
+                    .EnableSensitiveDataLogging()  // Habilita logs com dados sensíveis
+                    .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 
             services.AddIdentity<ApplicationUser, IdentityRole<int>>()
                 .AddRoles<IdentityRole<int>>()
@@ -71,6 +82,9 @@ namespace Blog.Api.Extensions
             }
 
             services.AddScoped<IAutorService, AutorService>();
+
+            services.AddHttpContextAccessor();
+            services.AddScoped(typeof(IUserService), typeof(UserService<ApplicationUser>));
 
             services.AddAuthentication(options =>
             {

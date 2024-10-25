@@ -1,4 +1,5 @@
 ﻿using Blog.Data.Models;
+using Blog.Data.Services;
 using Blog.Web.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -12,12 +13,12 @@ namespace Blog.Api.Controllers
     [Route("api/postagem")]
     public class PostagemController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUserService _userService;
         private readonly ApplicationDbContext _context;
 
-        public PostagemController(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
+        public PostagemController(IUserService userService, ApplicationDbContext context)
         {
-            _userManager = userManager;
+            _userService = userService;
             _context = context;
         }
 
@@ -55,6 +56,8 @@ namespace Blog.Api.Controllers
                 });
             }
 
+            postagem.UsuarioId = await RetornaIdUsuario();
+
             _context.Posts.Add(postagem);
             await _context.SaveChangesAsync();
 
@@ -90,6 +93,13 @@ namespace Blog.Api.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        private async Task<int?> RetornaIdUsuario()
+        {
+            var userId = await _userService.GetUserIdAsync();
+
+            return userId;
         }
     }
 }

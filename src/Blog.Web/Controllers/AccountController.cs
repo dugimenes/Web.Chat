@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.Web.Controllers
 {
-    //[Route("/Identity/Account/Register")]
+    [Route("/Identity/Account/Register")]
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;

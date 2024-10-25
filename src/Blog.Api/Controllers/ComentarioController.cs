@@ -1,4 +1,5 @@
 ﻿using Blog.Data.Models;
+using Blog.Data.Services;
 using Blog.Web.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -12,13 +13,13 @@ namespace Blog.Api.Controllers
     [Route("api/comentario")]
     public class ComentarioController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
+        private readonly IUserService _userService;
 
-        public ComentarioController(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
+        public ComentarioController(ApplicationDbContext context, IUserService userService)
         {
-            _userManager = userManager;
             _context = context;
+            _userService = userService;
         }
 
         [HttpGet]
@@ -55,6 +56,8 @@ namespace Blog.Api.Controllers
                 });
             }
 
+            comentario.UsuarioId = await RetornaIdUsuario();
+
             _context.Comentarios.Add(comentario);
             await _context.SaveChangesAsync();
 
@@ -90,6 +93,13 @@ namespace Blog.Api.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        private async Task<int?> RetornaIdUsuario()
+        {
+            var userId = await _userService.GetUserIdAsync();
+
+            return userId;
         }
     }
 }

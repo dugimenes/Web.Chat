@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Blog.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241024154731_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20241025154034_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -140,7 +140,8 @@ namespace Blog.Data.Migrations
                     b.Property<int>("PostId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UsuarioId")
+                    b.Property<int?>("UsuarioId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -181,7 +182,8 @@ namespace Blog.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("NVarchar");
 
-                    b.Property<int>("UsuarioId")
+                    b.Property<int?>("UsuarioId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.HasKey("Id");
