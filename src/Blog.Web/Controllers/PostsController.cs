@@ -1,6 +1,7 @@
 ﻿using Blog.Data.Models;
 using Blog.Web.Data;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -12,10 +13,12 @@ namespace Blog.Web.Controllers
     public class PostsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public PostsController(ApplicationDbContext context)
+        public PostsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         [AllowAnonymous]
@@ -61,6 +64,10 @@ namespace Blog.Web.Controllers
         {
             if (ModelState.IsValid)
             {
+                var user = await _userManager.GetUserAsync(User);
+                post.UsuarioId = user?.Id;
+                post.DataPostagem = DateTime.Now;
+
                 _context.Add(post);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -100,6 +107,10 @@ namespace Blog.Web.Controllers
             {
                 try
                 {
+                    var user = await _userManager.GetUserAsync(User);
+                    post.UsuarioId = user?.Id;
+                    post.DataAlteracaoPostagem = DateTime.Now;
+
                     _context.Update(post);
                     await _context.SaveChangesAsync();
                 }

@@ -1,6 +1,7 @@
 ﻿using Blog.Data.Models;
 using Blog.Web.Data;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -12,17 +13,22 @@ namespace Blog.Web.Controllers
     public class ComentariosController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public ComentariosController(ApplicationDbContext context)
+        public ComentariosController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index()
         {
+            var user = await _userManager.GetUserAsync(User);
+            var usuarioId = user?.Id;
+
             var applicationDbContext = _context.Comentarios.Include(c => c.Autor).Include(c => c.Post);
             return _context.Comentarios != null ?
-                            View(await applicationDbContext.ToListAsync()) :
+                            View(await applicationDbContext.Where(x => x.UsuarioId == usuarioId).ToListAsync()) :
                             Problem("Entity set 'ApplicationDbContext.Comentarios' is null.");
         }
 
@@ -65,6 +71,10 @@ namespace Blog.Web.Controllers
 
             if (ModelState.IsValid)
             {
+                var user = await _userManager.GetUserAsync(User);
+                comentario.UsuarioId = user?.Id;
+                comentario.DataCadastro = DateTime.Now;
+
                 _context.Add(comentario);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
