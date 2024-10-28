@@ -27,7 +27,7 @@ namespace Blog.Web.Controllers
             var applicationDbContext = _context.Posts.Include(p => p.Autor);
 
             return _context.Posts != null ?
-                            View(await applicationDbContext.ToListAsync()) :
+                            View(await applicationDbContext.Include(p => p.Comentarios).ToListAsync()) :
                             Problem("Entity set 'ApplicationDbContext.Posts' is null.");
         }
 

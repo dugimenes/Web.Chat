@@ -4,6 +4,7 @@ namespace Blog.Data.Models
 {
     public class Post
     {
+        private readonly List<Comentario> _comentarios;
         public int Id { get; set; }
 
         [Required(ErrorMessage = "O campo {0} é obrigatório")]
@@ -27,5 +28,7 @@ namespace Blog.Data.Models
         public virtual Autor? Autor { get; set; }
 
         public bool Ativo { get; set; }
+
+        public IReadOnlyCollection<Comentario> Comentarios => _comentarios;
     }
 }

@@ -1,4 +1,5 @@
-﻿using Blog.Data.Models;
+﻿using Blog.Api.Request;
+using Blog.Data.Models;
 using Blog.Data.Services;
 using Blog.Web.Data;
 using Microsoft.AspNetCore.Authorization;
@@ -46,7 +47,7 @@ namespace Blog.Api.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<Post>> Cadastrar(Post postagem)
+        public async Task<ActionResult<Post>> Cadastrar(PostRequest postagem)
         {
             if (!ModelState.IsValid)
             {
@@ -56,12 +57,18 @@ namespace Blog.Api.Controllers
                 });
             }
 
-            postagem.UsuarioId = await RetornaIdUsuario();
+            var post = new Post();
 
-            _context.Posts.Add(postagem);
+            post.UsuarioId = await RetornaIdUsuario();
+            post.Titulo = postagem.Titulo;
+            post.Descricao = postagem.Descricao;
+            post.DataPostagem = DateTime.Now;
+            post.Ativo = true;
+
+            _context.Posts.Add(post);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(Obter), new { id = postagem.Id }, postagem);
+            return CreatedAtAction(nameof(Obter), new { id = post.Id }, post);
         }
 
         [HttpPut("{id:int}")]

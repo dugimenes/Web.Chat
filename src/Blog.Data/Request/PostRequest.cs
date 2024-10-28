@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Blog.Api.Request
+namespace Blog.Data.Request
 {
     public class PostRequest
     {

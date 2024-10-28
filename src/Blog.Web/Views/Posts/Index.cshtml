@@ -19,10 +19,11 @@
                 @Html.DisplayNameFor(model => model.Descricao)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DataPostagem)
+                Data
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DataAlteracaoPostagem)
+                @* @Html.DisplayNameFor(model => model.DataAlteracaoPostagem) *@
+                Comentários
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Autor)
@@ -46,7 +47,16 @@
                 @Html.DisplayFor(modelItem => item.DataPostagem)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.DataAlteracaoPostagem)
+                @* @Html.DisplayFor(modelItem => item.DataAlteracaoPostagem) *@
+
+                @foreach (var comentario in item.Comentarios)
+                {
+                    <div>
+                        <p>@comentario.Descricao</p>
+                        <p><small>@comentario.DataCadastro</small></p>
+                    </div>
+                }
+
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Autor.Nome)

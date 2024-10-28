@@ -10,7 +10,7 @@ namespace Web.Blog.Data.EntityConfiguration
         {
             builder.ToTable("Posts");
 
-            builder.Property(x => x.Titulo)
+            builder.Property(a => a.Titulo)
                    .IsRequired()
                    .HasColumnType("NVarchar")
                    .HasMaxLength(500);
@@ -34,6 +34,11 @@ namespace Web.Blog.Data.EntityConfiguration
                    .WithMany()
                    .HasForeignKey(a => a.UsuarioId)
                    .IsRequired();
+
+            builder.HasMany(a => a.Comentarios)
+                .WithOne(b => b.Post)
+                .HasForeignKey(b => b.PostId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
