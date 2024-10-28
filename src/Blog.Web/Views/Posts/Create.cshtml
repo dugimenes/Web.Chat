@@ -4,28 +4,37 @@
     ViewData["Title"] = "Cadastrar postagem";
 }
 
+<link href="~/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="~/js/froala_editor.pkgd.min.js"></script>
+
 <h1>Postagem</h1>
 
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Titulo" class="control-label"></label>
-                <input asp-for="Titulo" class="form-control" />
-                <span asp-validation-for="Titulo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Descricao" class="control-label"></label>
-                <textarea asp-for="Descricao" class="form-control" rows="8"></textarea>
-                <span asp-validation-for="Descricao" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Cadastrar" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
+<div>
+    <form asp-action="Create">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="Titulo" class="control-label"></label>
+            <input asp-for="Titulo" class="form-control" />
+            <span asp-validation-for="Titulo" class="text-danger"></span>
+        </div>
+            
+        <div class="form-group">
+            <label asp-for="Descricao" class="control-label"></label>
+            @* <textarea asp-for="Descricao" class="form-control" rows="8"></textarea> *@
+            <textarea asp-for="Descricao" id="myEditor"></textarea>
+            <span asp-validation-for="Descricao" class="text-danger"></span>
+
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Cadastrar" class="btn btn-primary" />
+        </div>
+    </form>
+    
+    <script>
+        var editor = new FroalaEditor('#myEditor')
+    </script>
+
 </div>
 
 <div>

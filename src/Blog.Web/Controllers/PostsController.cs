@@ -62,6 +62,8 @@ namespace Blog.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Titulo,Descricao,DataPostagem,DataAlteracaoPostagem,UsuarioId,Ativo")] Post post)
         {
+            ModelState.Remove("Comentarios");
+
             if (ModelState.IsValid)
             {
                 var user = await _userManager.GetUserAsync(User);
@@ -102,6 +104,8 @@ namespace Blog.Web.Controllers
             {
                 return NotFound();
             }
+
+            ModelState.Remove("Comentarios");
 
             if (ModelState.IsValid)
             {
