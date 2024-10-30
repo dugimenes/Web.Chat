@@ -62,7 +62,7 @@ namespace Blog.Api.Extensions
             });
 
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString)
+                options.UseSqlite(connectionString)
                     .EnableSensitiveDataLogging()  // Habilita logs com dados sensíveis
                     .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 

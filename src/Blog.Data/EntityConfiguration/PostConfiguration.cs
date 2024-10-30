@@ -12,12 +12,12 @@ namespace Web.Blog.Data.EntityConfiguration
 
             builder.Property(a => a.Titulo)
                    .IsRequired()
-                   .HasColumnType("NVarchar")
+                   .HasColumnType("TEXT")
                    .HasMaxLength(500);
 
             builder.Property(a => a.Descricao)
                    .IsRequired()
-                   .HasColumnType("NVarchar(max)")
+                   .HasColumnType("TEXT")
                    .HasMaxLength(40000);
 
             builder.Property(a => a.DataPostagem)

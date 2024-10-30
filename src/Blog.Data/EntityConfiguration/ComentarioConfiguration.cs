@@ -12,7 +12,7 @@ namespace Web.Blog.Data.EntityConfiguration
 
             builder.Property(x => x.Descricao)
                    .IsRequired()
-                   .HasColumnType("NVarchar(max)")
+                   .HasColumnType("TEXT")
                    .HasMaxLength(10000);
 
             builder.Property(x => x.DataCadastro)
