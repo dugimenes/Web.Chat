@@ -46,7 +46,8 @@ namespace Blog.Web.Controllers
                     {
                         Nome = model.Nome,
                         SobreNome = model.Sobrenome,
-                        Id = user.Id
+                        Id = user.Id,
+                        DataCadastro = DateTime.Now
                     };
 
                     _context.Autores.Add(autor);

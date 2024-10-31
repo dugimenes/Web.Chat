@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 namespace Blog.Web.Controllers
 {
     [Authorize]
-    //[Route("posts")]
     public class PostsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -87,14 +86,22 @@ namespace Blog.Web.Controllers
             }
 
             var post = await _context.Posts.FindAsync(id);
+
             if (post == null)
             {
                 return NotFound();
             }
+
+            if (!await EhAdmin(post.UsuarioId))
+            {
+                return Forbid("Não Permitido.");
+            }
+
             ViewData["UsuarioId"] = new SelectList(_context.Autores, "Id", "Nome", post.UsuarioId);
 
             return View(post);
         }
+        //TODO Ajuste bug falta id usuário
 
         [HttpPost("editar/{id:int}")]
         [ValidateAntiForgeryToken]
@@ -111,8 +118,6 @@ namespace Blog.Web.Controllers
             {
                 try
                 {
-                    var user = await _userManager.GetUserAsync(User);
-                    post.UsuarioId = user?.Id;
                     post.DataAlteracaoPostagem = DateTime.Now;
 
                     _context.Update(post);
@@ -136,7 +141,6 @@ namespace Blog.Web.Controllers
             return View(post);
         }
 
-        [Authorize(Roles = "Admin")]
         [Route("excluir/{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -154,6 +158,11 @@ namespace Blog.Web.Controllers
                 return NotFound();
             }
 
+            if (!await EhAdmin(post.UsuarioId))
+            {
+                return Forbid("Não Permitido.");
+            }
+
             return View(post);
         }
 
@@ -162,6 +171,7 @@ namespace Blog.Web.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var post = await _context.Posts.FindAsync(id);
+
             if (post != null)
             {
                 _context.Posts.Remove(post);
@@ -175,6 +185,19 @@ namespace Blog.Web.Controllers
         private bool PostExists(int id)
         {
             return _context.Posts.Any(e => e.Id == id);
+        }
+
+        [HttpGet("tem-permissao")]
+        private async Task<bool> EhAdmin(int? ownerId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            if (await _userManager.IsInRoleAsync(user, "Admin") || ownerId == user.Id)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

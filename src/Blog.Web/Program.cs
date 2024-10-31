@@ -12,7 +12,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<ApplicationUser>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>()
+    .AddRoles<IdentityRole<int>>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 namespace Blog.Web.Controllers
 {
@@ -99,6 +100,11 @@ namespace Blog.Web.Controllers
                 return NotFound();
             }
 
+            if (!await EhAdmin(comentario.UsuarioId))
+            {
+                return Forbid("Não Permitido.");
+            }
+
             ViewData["UsuarioId"] = new SelectList(_context.Autores, "Id", "Nome", comentario.UsuarioId);
             ViewData["PostId"] = new SelectList(_context.Posts, "Id", "Descricao", comentario.PostId);
 
@@ -156,6 +162,11 @@ namespace Blog.Web.Controllers
                 return NotFound();
             }
 
+            if (!await EhAdmin(comentario.UsuarioId))
+            {
+                return Forbid("Não Permitido.");
+            }
+
             return View(comentario);
         }
 
@@ -164,6 +175,7 @@ namespace Blog.Web.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var comentario = await _context.Comentarios.FindAsync(id);
+
             if (comentario != null)
             {
                 _context.Comentarios.Remove(comentario);
@@ -177,6 +189,19 @@ namespace Blog.Web.Controllers
         private bool ComentarioExists(int id)
         {
             return _context.Comentarios.Any(e => e.Id == id);
+        }
+
+        [HttpGet("tem-permissao")]
+        private async Task<bool> EhAdmin(int? ownerId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            if (await _userManager.IsInRoleAsync(user, "Admin") || ownerId == user.Id)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }
