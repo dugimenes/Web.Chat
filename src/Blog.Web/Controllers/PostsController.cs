@@ -25,9 +25,9 @@ namespace Blog.Web.Controllers
         {
             var applicationDbContext = _context.Posts.Include(p => p.Autor);
 
-            return _context.Posts != null ?
-                            View(await applicationDbContext.Include(p => p.Comentarios).ToListAsync()) :
-                            Problem("Entity set 'ApplicationDbContext.Posts' is null.");
+            return _context.Posts != null
+                ? View(await applicationDbContext.Include(p => p.Comentarios).ToListAsync())
+                : Problem("Entity set 'ApplicationDbContext.Posts' is null.");
         }
 
         [Route("detalhes/{id:int}")]
@@ -59,7 +59,8 @@ namespace Blog.Web.Controllers
 
         [HttpPost("novo")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Titulo,Descricao,DataPostagem,DataAlteracaoPostagem,UsuarioId,Ativo")] Post post)
+        public async Task<IActionResult> Create(
+            [Bind("Id,Titulo,Descricao,DataPostagem,DataAlteracaoPostagem,UsuarioId,Ativo")] Post post)
         {
             ModelState.Remove("Comentarios");
 
@@ -73,6 +74,7 @@ namespace Blog.Web.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["UsuarioId"] = new SelectList(_context.Autores, "Id", "Nome", post.UsuarioId);
             return View(post);
         }
@@ -94,18 +96,18 @@ namespace Blog.Web.Controllers
 
             if (!await EhAdmin(post.UsuarioId))
             {
-                return Forbid("Não Permitido.");
+                return RedirectToAction("Permission", "Home");
             }
 
             ViewData["UsuarioId"] = new SelectList(_context.Autores, "Id", "Nome", post.UsuarioId);
 
             return View(post);
         }
-        //TODO Ajuste bug falta id usuário
 
         [HttpPost("editar/{id:int}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Titulo,Descricao,DataPostagem,DataAlteracaoPostagem,UsuarioId,Ativo")] Post post)
+        public async Task<IActionResult> Edit(int id,
+            [Bind("Id,Titulo,Descricao,DataPostagem,DataAlteracaoPostagem,UsuarioId,Ativo")] Post post)
         {
             if (id != post.Id)
             {
@@ -134,8 +136,10 @@ namespace Blog.Web.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["UsuarioId"] = new SelectList(_context.Autores, "Id", "Nome", post.UsuarioId);
 
             return View(post);
@@ -160,7 +164,7 @@ namespace Blog.Web.Controllers
 
             if (!await EhAdmin(post.UsuarioId))
             {
-                return Forbid("Não Permitido.");
+                return RedirectToAction("Permission", "Home");
             }
 
             return View(post);
@@ -198,6 +202,13 @@ namespace Blog.Web.Controllers
             }
 
             return false;
+        }
+
+        public IActionResult Comments(int postId)
+        {
+            ViewData["PostId"] = postId;
+
+            return RedirectToAction("Create", "Comentarios");
         }
     }
 }

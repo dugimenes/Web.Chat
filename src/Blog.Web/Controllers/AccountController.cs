@@ -65,5 +65,13 @@ namespace Blog.Web.Controllers
 
             return View(model);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync(); 
+            return RedirectToAction("Index", "Home");
+        }
     }
 }

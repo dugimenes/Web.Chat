@@ -28,9 +28,19 @@ namespace Blog.Web.Controllers
             var usuarioId = user?.Id;
 
             var applicationDbContext = _context.Comentarios.Include(c => c.Autor).Include(c => c.Post);
-            return _context.Comentarios != null ?
-                            View(await applicationDbContext.Where(x => x.UsuarioId == usuarioId).ToListAsync()) :
-                            Problem("Entity set 'ApplicationDbContext.Comentarios' is null.");
+
+            if (await EhAdmin(usuarioId))
+            {
+                return _context.Comentarios != null
+                    ? View(await applicationDbContext.ToListAsync())
+                    : Problem("Entity set 'ApplicationDbContext.Comentarios' is null.");
+            }
+            else
+            {
+                return _context.Comentarios != null
+                    ? View(await applicationDbContext.Where(x => x.UsuarioId == usuarioId).ToListAsync())
+                    : Problem("Entity set 'ApplicationDbContext.Comentarios' is null.");
+            }
         }
 
         [Route("detalhes/{id:int}")]
@@ -61,7 +71,7 @@ namespace Blog.Web.Controllers
             ViewData["PostId"] = new SelectList(_context.Posts, "Id", "Descricao");
             return View();
         }
-
+        //TODO Validar viewbag com o id da postagem
         
         [HttpPost("novo")]
         [ValidateAntiForgeryToken]
@@ -102,7 +112,7 @@ namespace Blog.Web.Controllers
 
             if (!await EhAdmin(comentario.UsuarioId))
             {
-                return Forbid("Não Permitido.");
+                return RedirectToAction("Permission", "Home");
             }
 
             ViewData["UsuarioId"] = new SelectList(_context.Autores, "Id", "Nome", comentario.UsuarioId);
@@ -164,7 +174,7 @@ namespace Blog.Web.Controllers
 
             if (!await EhAdmin(comentario.UsuarioId))
             {
-                return Forbid("Não Permitido.");
+                return RedirectToAction("Permission", "Home");
             }
 
             return View(comentario);
