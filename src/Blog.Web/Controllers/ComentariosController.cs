@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 
 namespace Blog.Web.Controllers
 {
@@ -69,16 +68,22 @@ namespace Blog.Web.Controllers
         {
             ViewData["UsuarioId"] = new SelectList(_context.Autores, "Id", "Nome");
             ViewData["PostId"] = new SelectList(_context.Posts, "Id", "Descricao");
+            
             return View();
         }
-        //TODO Validar viewbag com o id da postagem
         
         [HttpPost("novo")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Descricao,DataCadastro,PostId,UsuarioId,Ativo")] Comentario comentario)
         {
+            if (TempData.ContainsKey("PostId"))
+            {
+                comentario.PostId = (int)TempData["PostId"];
+            }
+
             ModelState.Remove("Id");
             ModelState.Remove("AutorId");
+            ModelState.Remove("PostId");
 
             if (ModelState.IsValid)
             {

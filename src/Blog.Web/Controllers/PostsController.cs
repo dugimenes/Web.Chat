@@ -206,7 +206,7 @@ namespace Blog.Web.Controllers
 
         public IActionResult Comments(int postId)
         {
-            ViewData["PostId"] = postId;
+            TempData["PostId"] = postId;
 
             return RedirectToAction("Create", "Comentarios");
         }

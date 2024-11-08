@@ -1,11 +1,13 @@
 ﻿using Blog.Data.Models;
 using Blog.Web.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Blog.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/autor")]
     public class AutorController : ControllerBase

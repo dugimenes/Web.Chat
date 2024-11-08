@@ -22,14 +22,12 @@ namespace Blog.Web.Controllers
             _context = context;
         }
 
-        // GET: /Account/Register
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
 
-        // POST: /Account/Register
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
@@ -41,7 +39,6 @@ namespace Blog.Web.Controllers
 
                 if (result.Succeeded)
                 {
-                    // Criação do objeto Autor
                     var autor = new Autor
                     {
                         Nome = model.Nome,

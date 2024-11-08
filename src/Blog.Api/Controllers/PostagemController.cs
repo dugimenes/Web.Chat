@@ -3,7 +3,6 @@ using Blog.Data.Models;
 using Blog.Data.Services;
 using Blog.Web.Data;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
