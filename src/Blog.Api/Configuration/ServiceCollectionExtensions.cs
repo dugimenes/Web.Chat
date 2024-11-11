@@ -1,4 +1,8 @@
-﻿using Blog.Data.Models;
+﻿using Blog.Api.Services.Autor;
+using Blog.Api.Services.Comentario;
+using Blog.Api.Services.Postagem;
+using Blog.Data.Models;
+using Blog.Data.Services;
 using Blog.Web.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -6,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using Blog.Data.Services;
 
 namespace Blog.Api.Extensions
 {
@@ -24,7 +27,6 @@ namespace Blog.Api.Extensions
 
             services.AddEndpointsApiExplorer();
 
-            // Configura a sessão
             services.AddDistributedMemoryCache();
             services.AddSession(options =>
             {
@@ -63,7 +65,7 @@ namespace Blog.Api.Extensions
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(connectionString)
-                    .EnableSensitiveDataLogging()  // Habilita logs com dados sensíveis
+                    .EnableSensitiveDataLogging()
                     .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 
             services.AddIdentity<ApplicationUser, IdentityRole<int>>()
@@ -82,6 +84,8 @@ namespace Blog.Api.Extensions
             }
 
             services.AddScoped<IAutorService, AutorService>();
+            services.AddScoped<IComentarioService, ComentarioService>();
+            services.AddScoped<IPostagemService, PostagemService>();
 
             services.AddHttpContextAccessor();
             services.AddScoped(typeof(IUserService), typeof(UserService<ApplicationUser>));

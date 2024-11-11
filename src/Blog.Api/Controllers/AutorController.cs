@@ -1,24 +1,20 @@
-﻿using Blog.Data.Models;
-using Blog.Web.Data;
+﻿using Blog.Api.Services.Autor;
+using Blog.Data.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Blog.Api.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/autor")]
+    [Route("api/[controller]")]
     public class AutorController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly ApplicationDbContext _context;
+        private readonly IAutorService _autorService;
 
-        public AutorController(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
+        public AutorController(IAutorService autorService)
         {
-            _userManager = userManager;
-            _context = context;
+            _autorService = autorService;
         }
 
         [HttpGet]
@@ -27,7 +23,8 @@ namespace Blog.Api.Controllers
         [ProducesDefaultResponseType]
         public async Task<ActionResult<IEnumerable<Autor>>> Obter()
         {
-            return await _context.Autores.ToListAsync();
+            var autores = await _autorService.ObterAutoresAsync();
+            return Ok(autores);
         }
 
         [HttpGet("{id:int}")]
@@ -36,9 +33,14 @@ namespace Blog.Api.Controllers
         [ProducesDefaultResponseType]
         public async Task<ActionResult<Autor>> Obter(int id)
         {
-            var autor = await _context.Autores.FindAsync(id);
+            var autor = await _autorService.ObterAutorPorIdAsync(id);
 
-            return autor;
+            if (autor == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(autor);
         }
 
         [HttpPut("{id:int}")]
@@ -52,8 +54,18 @@ namespace Blog.Api.Controllers
 
             if (!ModelState.IsValid) return ValidationProblem(ModelState);
 
-            _context.Autores.Update(autor);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _autorService.AtualizarAutorAsync(id, autor);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
 
             return NoContent();
         }
@@ -64,10 +76,14 @@ namespace Blog.Api.Controllers
         [ProducesDefaultResponseType]
         public async Task<ActionResult> Remover(int id)
         {
-            var autor = await _context.Posts.FindAsync(id);
-
-            _context.Posts.Remove(autor);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _autorService.RemoverAutorAsync(id);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
 
             return NoContent();
         }

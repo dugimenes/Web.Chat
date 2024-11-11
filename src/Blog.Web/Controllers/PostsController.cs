@@ -1,5 +1,6 @@
 ﻿using Blog.Data.Models;
 using Blog.Web.Data;
+using Blog.Web.Services.Post;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,42 +12,33 @@ namespace Blog.Web.Controllers
     [Authorize]
     public class PostsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IPostService _postService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ApplicationDbContext _context;
 
-        public PostsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public PostsController(UserManager<ApplicationUser> userManager, IPostService postService, ApplicationDbContext context)
         {
-            _context = context;
             _userManager = userManager;
+            _postService = postService;
+            _context = context;
         }
 
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Posts.Include(p => p.Autor);
-
-            return _context.Posts != null
-                ? View(await applicationDbContext.Include(p => p.Comentarios).ToListAsync())
-                : Problem("Entity set 'ApplicationDbContext.Posts' is null.");
+            var posts = await _postService.GetPostsAsync(); return View(posts);
         }
 
         [Route("detalhes/{id:int}")]
         public async Task<IActionResult> Details(int id)
         {
-            if (_context.Posts == null)
-            {
-                return NotFound();
-            }
-
-            var post = await _context.Posts
-                .Include(p => p.Autor)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var post = await _postService.GetPostByIdAsync(id);
 
             if (post == null)
             {
                 return NotFound();
             }
-
+            
             return View(post);
         }
 
@@ -66,13 +58,16 @@ namespace Blog.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                var user = await _userManager.GetUserAsync(User);
-                post.UsuarioId = user?.Id;
-                post.DataPostagem = DateTime.Now;
+                try
+                {
+                    await _postService.AddPostAsync(post);
 
-                _context.Add(post);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Index));
+                }
+                catch
+                {
+                    ModelState.AddModelError("", "Ocorreu um erro ao criar o post. Tente novamente mais tarde.");
+                }
             }
 
             ViewData["UsuarioId"] = new SelectList(_context.Autores, "Id", "Nome", post.UsuarioId);
@@ -82,12 +77,7 @@ namespace Blog.Web.Controllers
         [Route("editar/{id:int}")]
         public async Task<IActionResult> Edit(int id)
         {
-            if (_context.Posts == null)
-            {
-                return NotFound();
-            }
-
-            var post = await _context.Posts.FindAsync(id);
+            var post = await _postService.GetPostByIdAsync(id);
 
             if (post == null)
             {
@@ -98,9 +88,8 @@ namespace Blog.Web.Controllers
             {
                 return RedirectToAction("Permission", "Home");
             }
-
-            ViewData["UsuarioId"] = new SelectList(_context.Autores, "Id", "Nome", post.UsuarioId);
-
+            ViewData["UsuarioId"] = new SelectList(_context.Autores, "Id", "Nome", post.UsuarioId); 
+            
             return View(post);
         }
 
@@ -113,21 +102,18 @@ namespace Blog.Web.Controllers
             {
                 return NotFound();
             }
-
             ModelState.Remove("Comentarios");
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    post.DataAlteracaoPostagem = DateTime.Now;
-
-                    _context.Update(post);
-                    await _context.SaveChangesAsync();
+                    await _postService.UpdatePostAsync(post);
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!PostExists(post.Id))
+                    if (!_postService.PostExists(post.Id))
                     {
                         return NotFound();
                     }
@@ -136,26 +122,16 @@ namespace Blog.Web.Controllers
                         throw;
                     }
                 }
-
-                return RedirectToAction(nameof(Index));
             }
-
-            ViewData["UsuarioId"] = new SelectList(_context.Autores, "Id", "Nome", post.UsuarioId);
-
+            
+            ViewData["UsuarioId"] = new SelectList(_context.Autores, "Id", "Nome", post.UsuarioId); 
             return View(post);
         }
 
         [Route("excluir/{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
-            if (_context.Posts == null)
-            {
-                return NotFound();
-            }
-
-            var post = await _context.Posts
-                .Include(p => p.Autor)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var post = await _postService.GetPostByIdAsync(id);
 
             if (post == null)
             {
@@ -174,23 +150,12 @@ namespace Blog.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var post = await _context.Posts.FindAsync(id);
-
-            if (post != null)
-            {
-                _context.Posts.Remove(post);
-            }
-
-            await _context.SaveChangesAsync();
+            await _postService.DeletePostAsync(id); 
+            
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpGet("existe-post")]
-        private bool PostExists(int id)
-        {
-            return _context.Posts.Any(e => e.Id == id);
-        }
-
+        
         [HttpGet("tem-permissao")]
         private async Task<bool> EhAdmin(int? ownerId)
         {

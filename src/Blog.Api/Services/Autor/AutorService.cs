@@ -1,8 +1,8 @@
 ﻿using Blog.Data.Models;
 using Blog.Web.Data;
-using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
-namespace Blog.Data.Services
+namespace Blog.Api.Services.Autor
 {
     public class AutorService : IAutorService
     {
@@ -15,9 +15,45 @@ namespace Blog.Data.Services
             _logger = logger;
         }
 
+        public async Task<IEnumerable<Data.Models.Autor>> ObterAutoresAsync()
+        {
+            return await _context.Autores.ToListAsync();
+        }
+
+        public async Task<Data.Models.Autor> ObterAutorPorIdAsync(int id)
+        {
+            return await _context.Autores.FindAsync(id);
+        }
+
+        public async Task AtualizarAutorAsync(int id, Data.Models.Autor autor)
+        {
+            if (id != autor.Id)
+            {
+                throw new ArgumentException("ID inválido para atualização.");
+            }
+
+            _context.Autores.Update(autor);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoverAutorAsync(int id)
+        {
+            var autor = await _context.Autores.FindAsync(id);
+
+            if (autor != null)
+            {
+                _context.Autores.Remove(autor);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                throw new KeyNotFoundException("Autor não encontrado.");
+            }
+        }
+
         public async Task CreateAutorAsync(ApplicationUser user, RegisterUserViewModel model)
         {
-            var autor = new Autor
+            var autor = new Data.Models.Autor
             {
                 Id = user.Id,
                 Nome = model.Nome,

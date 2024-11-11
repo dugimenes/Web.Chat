@@ -1,5 +1,6 @@
 ﻿using Blog.Data.Models;
 using Blog.Web.Data;
+using Blog.Web.Services.Comentario;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,47 +14,28 @@ namespace Blog.Web.Controllers
     public class ComentariosController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IComentarioService _comentarioService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public ComentariosController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public ComentariosController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IComentarioService comentarioService)
         {
             _context = context;
             _userManager = userManager;
+            _comentarioService = comentarioService;
         }
 
         public async Task<IActionResult> Index()
         {
-            var user = await _userManager.GetUserAsync(User);
-            var usuarioId = user?.Id;
-
-            var applicationDbContext = _context.Comentarios.Include(c => c.Autor).Include(c => c.Post);
-
-            if (await EhAdmin(usuarioId))
-            {
-                return _context.Comentarios != null
-                    ? View(await applicationDbContext.ToListAsync())
-                    : Problem("Entity set 'ApplicationDbContext.Comentarios' is null.");
-            }
-            else
-            {
-                return _context.Comentarios != null
-                    ? View(await applicationDbContext.Where(x => x.UsuarioId == usuarioId).ToListAsync())
-                    : Problem("Entity set 'ApplicationDbContext.Comentarios' is null.");
-            }
+            var user = await _userManager.GetUserAsync(User); 
+            var comentarios = await _comentarioService.GetComentariosAsync(user?.Id); 
+            
+            return View(comentarios);
         }
 
         [Route("detalhes/{id:int}")]
         public async Task<IActionResult> Details(int id)
         {
-            if (_context.Comentarios == null)
-            {
-                return NotFound();
-            }
-
-            var comentario = await _context.Comentarios
-                .Include(c => c.Autor)
-                .Include(c => c.Post)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var comentario = await _comentarioService.GetComentarioByIdAsync(id);
 
             if (comentario == null)
             {
@@ -81,48 +63,50 @@ namespace Blog.Web.Controllers
                 comentario.PostId = (int)TempData["PostId"];
             }
 
-            ModelState.Remove("Id");
-            ModelState.Remove("AutorId");
+            ModelState.Remove("Id"); 
+            ModelState.Remove("AutorId"); 
             ModelState.Remove("PostId");
 
             if (ModelState.IsValid)
             {
-                var user = await _userManager.GetUserAsync(User);
-                comentario.UsuarioId = user?.Id;
-                comentario.DataCadastro = DateTime.Now;
+                try
+                {
+                    var user = await _userManager.GetUserAsync(User);
+                    await _comentarioService.AddComentarioAsync(comentario, user);
 
-                _context.Add(comentario);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Index));
+                }
+                catch
+                {
+                    ModelState.AddModelError("", "Ocorreu um erro ao criar o post. Tente novamente mais tarde.");
+                }
             }
-            ViewData["UsuarioId"] = new SelectList(_context.Autores, "Id", "Nome", comentario.UsuarioId);
-            ViewData["PostId"] = new SelectList(_context.Posts, "Id", "Descricao", comentario.PostId);
+
+            ViewData["UsuarioId"] = new SelectList(_context.Autores, "Id", "Nome", comentario.UsuarioId); 
+            ViewData["PostId"] = new SelectList(_context.Posts, "Id", "Descricao", comentario.PostId); 
+            
             return View(comentario);
         }
 
         [Route("editar/{id:int}")]
         public async Task<IActionResult> Edit(int id)
         {
-            if (_context.Comentarios == null)
-            {
-                return NotFound();
-            }
-
-            var comentario = await _context.Comentarios.FindAsync(id);
+            var comentario = await _comentarioService.GetComentarioByIdAsync(id);
 
             if (comentario == null)
             {
                 return NotFound();
             }
+            var user = await _userManager.GetUserAsync(User);
 
-            if (!await EhAdmin(comentario.UsuarioId))
+            if (!await _comentarioService.EhAdminAsync(user, comentario.UsuarioId))
             {
                 return RedirectToAction("Permission", "Home");
             }
 
-            ViewData["UsuarioId"] = new SelectList(_context.Autores, "Id", "Nome", comentario.UsuarioId);
-            ViewData["PostId"] = new SelectList(_context.Posts, "Id", "Descricao", comentario.PostId);
-
+            ViewData["UsuarioId"] = new SelectList(_context.Autores, "Id", "Nome", comentario.UsuarioId); 
+            ViewData["PostId"] = new SelectList(_context.Posts, "Id", "Descricao", comentario.PostId); 
+            
             return View(comentario);
         }
 
@@ -139,12 +123,12 @@ namespace Blog.Web.Controllers
             {
                 try
                 {
-                    _context.Update(comentario);
-                    await _context.SaveChangesAsync();
+                    await _comentarioService.UpdateComentarioAsync(comentario);
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ComentarioExists(comentario.Id))
+                    if (!_comentarioService.ComentarioExists(comentario.Id))
                     {
                         return NotFound();
                     }
@@ -153,31 +137,24 @@ namespace Blog.Web.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
             }
-            ViewData["UsuarioId"] = new SelectList(_context.Autores, "Id", "Nome", comentario.UsuarioId);
-            ViewData["PostId"] = new SelectList(_context.Posts, "Id", "Descricao", comentario.PostId);
-            return View(comentario);
+
+            ViewData["UsuarioId"] = new SelectList(_context.Autores, "Id", "Nome", comentario.UsuarioId); ViewData["PostId"] = new SelectList(_context.Posts, "Id", "Descricao", comentario.PostId); return View(comentario);
         }
 
         [Route("excluir/{id:int}")]
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            var comentario = await _comentarioService.GetComentarioByIdAsync(id);
 
-            var comentario = await _context.Comentarios
-                .Include(c => c.Autor)
-                .Include(c => c.Post)
-                .FirstOrDefaultAsync(m => m.Id == id);
             if (comentario == null)
             {
                 return NotFound();
             }
 
-            if (!await EhAdmin(comentario.UsuarioId))
+            var user = await _userManager.GetUserAsync(User);
+
+            if (!await _comentarioService.EhAdminAsync(user, comentario.UsuarioId))
             {
                 return RedirectToAction("Permission", "Home");
             }
@@ -189,34 +166,9 @@ namespace Blog.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var comentario = await _context.Comentarios.FindAsync(id);
+            await _comentarioService.DeleteComentarioAsync(id);
 
-            if (comentario != null)
-            {
-                _context.Comentarios.Remove(comentario);
-            }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        [HttpGet("existe-comentario")]
-        private bool ComentarioExists(int id)
-        {
-            return _context.Comentarios.Any(e => e.Id == id);
-        }
-
-        [HttpGet("tem-permissao")]
-        private async Task<bool> EhAdmin(int? ownerId)
-        {
-            var user = await _userManager.GetUserAsync(User);
-
-            if (await _userManager.IsInRoleAsync(user, "Admin") || ownerId == user.Id)
-            {
-                return true;
-            }
-
-            return false;
         }
     }
 }

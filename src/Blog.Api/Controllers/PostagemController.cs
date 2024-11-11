@@ -1,25 +1,21 @@
 ﻿using Blog.Api.Request;
+using Blog.Api.Services.Postagem;
 using Blog.Data.Models;
-using Blog.Data.Services;
-using Blog.Web.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Blog.Api.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/postagem")]
+    [Route("api/[controller]")]
     public class PostagemController : ControllerBase
     {
-        private readonly IUserService _userService;
-        private readonly ApplicationDbContext _context;
+        private readonly IPostagemService _postagemService;
 
-        public PostagemController(IUserService userService, ApplicationDbContext context)
+        public PostagemController(IPostagemService postagemService)
         {
-            _userService = userService;
-            _context = context;
+            _postagemService = postagemService;
         }
 
         [HttpGet]
@@ -28,7 +24,8 @@ namespace Blog.Api.Controllers
         [ProducesDefaultResponseType]
         public async Task<ActionResult<IEnumerable<Post>>> Obter()
         {
-            return await _context.Posts.ToListAsync();
+            var posts = await _postagemService.ObterPostsAsync();
+            return Ok(posts);
         }
 
         [HttpGet("{id:int}")]
@@ -37,9 +34,14 @@ namespace Blog.Api.Controllers
         [ProducesDefaultResponseType]
         public async Task<ActionResult<Post>> Obter(int id)
         {
-            var post = await _context.Posts.FindAsync(id);
+            var post = await _postagemService.ObterPostPorIdAsync(id);
 
-            return post;
+            if (post == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(post);
         }
 
         [HttpPost]
@@ -56,16 +58,7 @@ namespace Blog.Api.Controllers
                 });
             }
 
-            var post = new Post();
-
-            post.UsuarioId = await RetornaIdUsuario();
-            post.Titulo = postagem.Titulo;
-            post.Descricao = postagem.Descricao;
-            post.DataPostagem = DateTime.Now;
-            post.Ativo = true;
-
-            _context.Posts.Add(post);
-            await _context.SaveChangesAsync();
+            var post = await _postagemService.CadastrarPostAsync(postagem);
 
             return CreatedAtAction(nameof(Obter), new { id = post.Id }, post);
         }
@@ -81,8 +74,7 @@ namespace Blog.Api.Controllers
 
             if (!ModelState.IsValid) return ValidationProblem(ModelState);
 
-            _context.Posts.Update(postagem);
-            await _context.SaveChangesAsync();
+            await _postagemService.AtualizarPostAsync(id, postagem);
 
             return NoContent();
         }
@@ -94,19 +86,9 @@ namespace Blog.Api.Controllers
         [ProducesDefaultResponseType]
         public async Task<ActionResult> Remover(int id)
         {
-            var postagem = await _context.Posts.FindAsync(id);
-
-            _context.Posts.Remove(postagem);
-            await _context.SaveChangesAsync();
+            await _postagemService.RemoverPostAsync(id);
 
             return NoContent();
-        }
-
-        private async Task<int?> RetornaIdUsuario()
-        {
-            var userId = await _userService.GetUserIdAsync();
-
-            return userId;
         }
     }
 }

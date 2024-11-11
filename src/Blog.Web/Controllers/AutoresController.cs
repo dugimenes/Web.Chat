@@ -1,5 +1,6 @@
 ﻿using Blog.Data.Models;
 using Blog.Web.Data;
+using Blog.Web.Services.Autor;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,31 +12,27 @@ namespace Blog.Web.Controllers
     public class AutoresController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IAutorService _autorService;
 
-        public AutoresController(ApplicationDbContext context)
+        public AutoresController(ApplicationDbContext context, IAutorService autorService)
         {
             _context = context;
+            _autorService = autorService;
         }
 
         
         public async Task<IActionResult> Index()
         {
-            return _context.Autores != null ?
-                View(await _context.Autores.ToListAsync()) :
-                Problem("Entity set 'ApplicationDbContext.Autores' is null.");
+            var autores = await _autorService.GetAutoresAsync(); 
+            
+            return View(autores);
         }
 
         [Route("detalhes/{id:int}")]
         public async Task<IActionResult> Details(int id)
         {
-            if (_context.Autores == null)
-            {
-                return NotFound();
-            }
+            var autor = await _autorService.GetAutorByIdAsync(id);
 
-            var autor = await _context.Autores
-                .FirstOrDefaultAsync(m => m.Id == id);
-            
             if (autor == null)
             {
                 return NotFound();
@@ -56,27 +53,30 @@ namespace Blog.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(autor);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    await _autorService.AddAutorAsync(autor);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch
+                {
+                    ModelState.AddModelError("", "Ocorreu um erro ao criar o post. Tente novamente mais tarde.");
+                }
             }
+
             return View(autor);
         }
 
         [Route("editar/{id:int}")]
         public async Task<IActionResult> Edit(int id)
         {
-            if (_context.Autores == null)
-            {
-                return NotFound();
-            }
-
-            var autor = await _context.Autores.FindAsync(id);
+            var autor = await _autorService.GetAutorByIdAsync(id);
 
             if (autor == null)
             {
                 return NotFound();
             }
+
             return View(autor);
         }
 
@@ -93,12 +93,12 @@ namespace Blog.Web.Controllers
             {
                 try
                 {
-                    _context.Update(autor);
-                    await _context.SaveChangesAsync();
+                    await _autorService.UpdateAutorAsync(autor);
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!AutorExists(autor.Id))
+                    if (!_autorService.AutorExists(autor.Id))
                     {
                         return NotFound();
                     }
@@ -107,7 +107,6 @@ namespace Blog.Web.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
             }
             return View(autor);
         }
@@ -115,13 +114,7 @@ namespace Blog.Web.Controllers
         [Route("excluir/{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
-            if (_context.Autores == null)
-            {
-                return NotFound();
-            }
-
-            var autor = await _context.Autores
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var autor = await _autorService.GetAutorByIdAsync(id);
 
             if (autor == null)
             {
@@ -135,19 +128,14 @@ namespace Blog.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var autor = await _context.Autores.FindAsync(id);
-            if (autor != null)
-            {
-                _context.Autores.Remove(autor);
-            }
+            await _autorService.DeleteAutorAsync(id);
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool AutorExists(int id)
         {
-            return _context.Autores.Any(e => e.Id == id);
+            return _autorService.AutorExists(id);
         }
     }
 }

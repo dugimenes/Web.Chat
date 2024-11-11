@@ -1,23 +1,23 @@
-﻿using Blog.Data.Models;
+﻿using Blog.Api.Request;
+using Blog.Api.Services.Comentario;
+using Blog.Data.Models;
 using Blog.Data.Services;
-using Blog.Web.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Blog.Api.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/comentario")]
+    [Route("api/[controller]")]
     public class ComentarioController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IComentarioService _comentarioService;
         private readonly IUserService _userService;
 
-        public ComentarioController(ApplicationDbContext context, IUserService userService)
+        public ComentarioController(IComentarioService comentarioService, IUserService userService)
         {
-            _context = context;
+            _comentarioService = comentarioService;
             _userService = userService;
         }
 
@@ -27,25 +27,31 @@ namespace Blog.Api.Controllers
         [ProducesDefaultResponseType]
         public async Task<ActionResult<IEnumerable<Comentario>>> Obter()
         {
-            return await _context.Comentarios.ToListAsync();
+            var comentarios = await _comentarioService.ObterComentariosAsync();
+            return Ok(comentarios);
         }
 
         [HttpGet("{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<Post>> Obter(int id)
+        public async Task<ActionResult<Comentario>> Obter(int id)
         {
-            var comentario = await _context.Posts.FindAsync(id);
+            var comentario = await _comentarioService.ObterComentarioPorIdAsync(id);
 
-            return comentario;
+            if (comentario == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(comentario);
         }
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<Comentario>> Cadastrar(Comentario comentario)
+        public async Task<ActionResult<Comentario>> Cadastrar(ComentarioRequest comentarioRequest)
         {
             if (!ModelState.IsValid)
             {
@@ -55,10 +61,8 @@ namespace Blog.Api.Controllers
                 });
             }
 
-            comentario.UsuarioId = await RetornaIdUsuario();
-
-            _context.Comentarios.Add(comentario);
-            await _context.SaveChangesAsync();
+            var userId = await _userService.GetUserIdAsync();
+            var comentario = await _comentarioService.CadastrarComentarioAsync(comentarioRequest, userId);
 
             return CreatedAtAction(nameof(Obter), new { id = comentario.Id }, comentario);
         }
@@ -74,8 +78,7 @@ namespace Blog.Api.Controllers
 
             if (!ModelState.IsValid) return ValidationProblem(ModelState);
 
-            _context.Comentarios.Update(comentario);
-            await _context.SaveChangesAsync();
+            await _comentarioService.AtualizarComentarioAsync(id, comentario);
 
             return NoContent();
         }
@@ -86,19 +89,9 @@ namespace Blog.Api.Controllers
         [ProducesDefaultResponseType]
         public async Task<ActionResult> Remover(int id)
         {
-            var comentario = await _context.Comentarios.FindAsync(id);
-
-            _context.Comentarios.Remove(comentario);
-            await _context.SaveChangesAsync();
+            await _comentarioService.RemoverComentarioAsync(id);
 
             return NoContent();
-        }
-
-        private async Task<int?> RetornaIdUsuario()
-        {
-            var userId = await _userService.GetUserIdAsync();
-
-            return userId;
         }
     }
 }
